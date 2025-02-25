@@ -33,5 +33,3 @@ jobs:
       - name: Run unit tests
         run: python -m pytest -v test/*
         
-      - name: Run species alignment analysis
-        run: python -m pytest -v test/*
