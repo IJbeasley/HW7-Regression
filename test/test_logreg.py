@@ -29,9 +29,9 @@ from sklearn.metrics import accuracy_score
 
 
 def test_prediction():
-	"""
-	
-  Unit test to check that prediction is working correctly. 
+    """
+    
+    Unit test to check that prediction is working correctly. 
   
 	Fit a model with our regression module functions, to data in dataset/data/nsclc.csv. 
   Then estimate the accurarcy of this model on a validation dataset (with scikit learn)
@@ -41,167 +41,167 @@ def test_prediction():
   """
 
 	# Load data
-  X_train, X_val, y_train, y_val = utils.loadDataset(split_percent=0.8, split_seed=42)
-                 #  features=[
-                 #            'Penicillin V Potassium 500 MG',
-                 #            'Computed tomography of chest and abdomen',
-                 #            'Plain chest X-ray (procedure)',
-                 #            'Low Density Lipoprotein Cholesterol',
-                 #             'Creatinine',
-                 #             'AGE_DIAGNOSIS'
-                 #           ],
-                 # split_percent=0.8,
-                 # split_seed=42
-                 #                                          )
+    X_train, X_val, y_train, y_val = utils.loadDataset(split_percent=0.8, split_seed=42)
+    #  features=[
+    #            'Penicillin V Potassium 500 MG',
+    #            'Computed tomography of chest and abdomen',
+    #            'Plain chest X-ray (procedure)',
+    #            'Low Density Lipoprotein Cholesterol',
+    #             'Creatinine',
+    #             'AGE_DIAGNOSIS'
+    #           ],
+    # split_percent=0.8,
+    # split_seed=42
+    #                                          )
 
-  # Split validation set into validation and test
-  X_val, X_test, y_val, y_test = train_test_split(X_val, y_val, test_size=0.5, random_state=42)
+    # Split validation set into validation and test
+    X_val, X_test, y_val, y_test = train_test_split(X_val, y_val, test_size=0.5, random_state=42)
 
-  # Scale the data, since values vary across feature. Note that we
-  # fit on the training data and use the same scaler for X_val.
-  sc = StandardScaler()
-  X_train = sc.fit_transform(X_train)
-  X_val = sc.transform(X_val)
+    # Scale the data, since values vary across feature. Note that we
+    # fit on the training data and use the same scaler for X_val.
+    sc = StandardScaler()
+    X_train = sc.fit_transform(X_train)
+    X_val = sc.transform(X_val)
 
-        # Train/fit logistic regression module using regression module
-        lr_mod = LogisticRegressor(num_feats = len(X_train.shape[1]), 
-				   max_iter=500
-				   )
+    # Train/fit logistic regression module using regression module
+    lr_mod = LogisticRegressor(num_feats = len(X_train.shape[1]), 
+                               max_iter=500
+                               )
 
-        lr_mod.train_model(X_train, y_train, X_val, y_val)
+    lr_mod.train_model(X_train, y_train, X_val, y_val)
 
-        # Calculate test set set predictions: 
-        test_y_pred = lr_mod.make_prediction(X_test)
-         
-        # Calculate test set prediction accuarcy for regression module fitted model
-        test_y_pred_accuarcy = accuracy_score(test_y_pred, y_test)
+    # Calculate test set set predictions: 
+    test_y_pred = lr_mod.make_prediction(X_test)
+     
+    # Calculate test set prediction accuarcy for regression module fitted model
+    test_y_pred_accuarcy = accuracy_score(test_y_pred, y_test)
 
-        # Now fit scikit learn model
-        sk_lr_mod = LogisticRegression(solver='saga', 
-				       max_iter=500,
-				       random_state=42)
+    # Now fit scikit learn model
+    sk_lr_mod = LogisticRegression(solver='saga', 
+                                   max_iter=500,
+                                   random_state=42)
 
-        sk_lr_mod.fit(X_train, y_train)
-        
-        # Manually set feature weights and intercept
-        sk_lr_mod.intercept_ = np.array([lr_mod.W[-1]])  # Last element is bias/intercept
-        sk_lr_mod.coef_  = lr_mod.W[:-1].reshape(1, -1) 
+    sk_lr_mod.fit(X_train, y_train)
+    
+    # Manually set feature weights and intercept
+    sk_lr_mod.intercept_ = np.array([lr_mod.W[-1]])  # Last element is bias/intercept
+    sk_lr_mod.coef_  = lr_mod.W[:-1].reshape(1, -1) 
 
-        # Predict on the test set
-        sk_y_pred = sk_lr_mod.predict(X_test)
+    # Predict on the test set
+    sk_y_pred = sk_lr_mod.predict(X_test)
 
-        # Calculate test set prediction accuarcy for scikit learn fitted model
-        sk_test_y_pred_accuracy = accuracy_score(y_test, sk_y_pred)
+    # Calculate test set prediction accuarcy for scikit learn fitted model
+    sk_test_y_pred_accuracy = accuracy_score(y_test, sk_y_pred)
 
-        # Check: is the accuarcy of predictions from both the sklearn model, and regression module model consistent?
-        assert np.isclose(test_y_pred_accuarcy, sk_y_pred_accuarcy, rtol = 0.01), "Accuracy of fitted model differs from sklearn"
+    # Check: is the accuarcy of predictions from both the sklearn model, and regression module model consistent?
+    assert np.isclose(test_y_pred_accuarcy, sk_y_pred_accuarcy, rtol = 0.01), "Accuracy of fitted model differs from sklearn"
 
-        # Check: are the predictions from both the sklearn model, and regression module model consistent?
-        assert np.array_equal(test_y_pred, sk_y_pred), "Predictions of our model differ from sklearn model"
+    # Check: are the predictions from both the sklearn model, and regression module model consistent?
+    assert np.array_equal(test_y_pred, sk_y_pred), "Predictions of our model differ from sklearn model"
 
 		
 
 def test_loss_function():
-	"""
-        Unit test to check that loss estimated by the regression module's loss_function is being calculated correctly,
-	by comparing it to scikit learn's log_loss function using true y values from data/nsclc.csv, and randomly generated y predictions. 
-        """
+    """
+    Unit test to check that loss estimated by the regression module's loss_function is being calculated correctly,
+    by comparing it to scikit learn's log_loss function using true y values from data/nsclc.csv, and randomly generated y predictions. 
+    """
 
-	# Load only y_train as our y_true - X is not needed for this test
-         _, _, y_true, _ = utils.loadDataset(
-                features=[
-                  'Penicillin V Potassium 500 MG',
-	          'Computed tomography of chest and abdomen',
-		],
-                   split_percent=0.8,
-                   split_seed=42
-                                                  )
-
-        # Create a y_pred array, of random 0s and 1s
-        # Set seed for reproducibility
-        np.random.seed(42)
-        y_pred = np.random.randint(0, 2, size=y_true.shape)
-
-        # Calculate loss using loss_function from regression module
-        lr_mod = LogisticRegressor(num_feats = 2)
-        lr_mod.loss_function(y_true, y_pred)
-
-        # Calculate loss using scikit learn's log_loss function
-        true_loss=log_loss(y_true, y_pred)
-
-        assert np.isclose(logreg_loss, sklearn_loss), 'Calculated loss by loss_function is not correct'
-
-
-def test_gradient():
-	"""
-        Unit test to check that gradient is being calculated correctly with calculate_gradient.
-	Fit a logistic regression model with our regression module functions, to a small subset data in dataset/data/nsclc.csv, 
-        compare the gradient estimated against gradient to calculated by hand. 
-        """
-	# Load data
-        _, X_subsample, _, y_subsample = utils.loadDataset(
-                  features=[
-                            'Penicillin V Potassium 500 MG',
-                            'Computed tomography of chest and abdomen',
-                             'AGE_DIAGNOSIS'
-        ],
-        split_percent=0.95,
-        split_seed=42
-                                                          )
-
-        # Initialise logistic regression model 
-	lr_mod = LogisticRegressor(num_feats = len(X_train.shape[1]), 
-			           max_iter=500
-				   )	
-				   
-        # Train/fit logistic regression module using regression module
-        lr_mod.train_model(X_subsample, y_subsample)
-
-	# Calculate gradient with calculate_gradient
-	est_grad = lr_mod.calculate_gradient(y_subsample, X_subsample)
-
-	# TO DO: Calculate gradient by hand
-	true_grad = np.array([1/2, 1/2])
-
-	# Compare true gradient with calculated gradient
-	# TO DO: Change tolerance
-	assert np.allclose(est_grad, true_grad, atol = 1), "Gradient is not being estimated correctly by calculate_gradient function"
-
-def test_training():
-	"""
-        Unit test to check that weights update during training. 
-	Fit a model with our regression module functions, to data in dataset/data/nsclc.csv, 
-        and compare the weights of the final model, with that of the initalised model. 
-        """
-
-	# Load data
-         X_train, _, y_train, _ = utils.loadDataset(
-                  features=[
-                            'Penicillin V Potassium 500 MG',
-                            'Computed tomography of chest and abdomen',
-                            'Plain chest X-ray (procedure)'
+    # Load only y_train as our y_true - X is not needed for this test
+    _, _, y_true, _ = utils.loadDataset(
+        features=[
+            'Penicillin V Potassium 500 MG',
+            'Computed tomography of chest and abdomen',
         ],
         split_percent=0.8,
         split_seed=42
-                                                          )
-        # perform necessary data scaling
-        sc = StandardScaler()
-        X_train = sc.fit_transform(X_train)
+    )
+
+    # Create a y_pred array, of random 0s and 1s
+    # Set seed for reproducibility
+    np.random.seed(42)
+    y_pred = np.random.randint(0, 2, size=y_true.shape)
+
+    # Calculate loss using loss_function from regression module
+    lr_mod = LogisticRegressor(num_feats = 2)
+    logreg_loss = lr_mod.loss_function(y_true, y_pred)
+
+    # Calculate loss using scikit learn's log_loss function
+    sklearn_loss = log_loss(y_true, y_pred)
+
+    assert np.isclose(logreg_loss, sklearn_loss), 'Calculated loss by loss_function is not correct'
+
+
+def test_gradient():
+            """
+            Unit test to check that gradient is being calculated correctly with calculate_gradient.
+            Fit a logistic regression model with our regression module functions, to a small subset data in dataset/data/nsclc.csv, 
+            compare the gradient estimated against gradient to calculated by hand. 
+            """
+            # Load data
+            _, X_subsample, _, y_subsample = utils.loadDataset(
+                features=[
+                    'Penicillin V Potassium 500 MG',
+                    'Computed tomography of chest and abdomen',
+                    'AGE_DIAGNOSIS'
+                ],
+                split_percent=0.95,
+                split_seed=42
+            )
         
-        # Initialise logistic regression model 
-	lr_mod = LogisticRegressor(num_feats = len(X_train.shape[1]), 
-			           max_iter=500
-				   )
+            # Initialise logistic regression model 
+            lr_mod = LogisticRegressor(num_feats = len(X_train.shape[1]), 
+                                       max_iter=500
+                                       )    
+                                       
+            # Train/fit logistic regression module using regression module
+            lr_mod.train_model(X_subsample, y_subsample)
+        
+            # Calculate gradient with calculate_gradient
+            est_grad = lr_mod.calculate_gradient(y_subsample, X_subsample)
+        
+            # TO DO: Calculate gradient by hand
+            true_grad = np.array([1/2, 1/2])
+        
+            # Compare true gradient with calculated gradient
+            # TO DO: Change tolerance
+            assert np.allclose(est_grad, true_grad, atol = 1), "Gradient is not being estimated correctly by calculate_gradient function"
 
-	# Get initial weights
-	init_weights = lr_mod.W.copy()	
+def test_training():
+    """
+    Unit test to check that weights update during training. 
+    Fit a model with our regression module functions, to data in dataset/data/nsclc.csv, 
+    and compare the weights of the final model, with that of the initalised model. 
+    """
 
-        # Train/fit logistic regression module using regression module
-        lr_mod.train_model(X_train, y_train)
+    # Load data
+    X_train, _, y_train, _ = utils.loadDataset(
+        features=[
+            'Penicillin V Potassium 500 MG',
+            'Computed tomography of chest and abdomen',
+            'Plain chest X-ray (procedure)'
+        ],
+        split_percent=0.8,
+        split_seed=42
+    )
+    # perform necessary data scaling
+    sc = StandardScaler()
+    X_train = sc.fit_transform(X_train)
+    
+    # Initialise logistic regression model 
+    lr_mod = LogisticRegressor(num_feats=len(X_train.shape[1]), 
+                               max_iter=500
+                               )
 
-        # Get final weights
-        final_weights = lr_mod.W.copy()
+    # Get initial weights
+    init_weights = lr_mod.W.copy()    
 
-        # Check: have initial weights been updated (i.e. changed during training)?
-        assert np.array_equal(init_weights, final_weights) == False, 'Model weights are not being updated during training'
+    # Train/fit logistic regression module using regression module
+    lr_mod.train_model(X_train, y_train)
+
+    # Get final weights
+    final_weights = lr_mod.W.copy()
+
+    # Check: have initial weights been updated (i.e. changed during training)?
+    assert np.array_equal(init_weights, final_weights) == False, 'Model weights are not being updated during training'
        
