@@ -63,9 +63,7 @@ def test_prediction():
 
         # Train/fit logistic regression module using regression module
         lr_mod = LogisticRegressor(num_feats = len(X_train.shape[1]), 
-				   learning_rate=0.01, 
-				   max_iter=500, 
-				   batch_size=50
+				   max_iter=500
 				   )
 
         lr_mod.train_model(X_train, y_train, X_val, y_val)
@@ -133,7 +131,47 @@ def test_loss_function():
 
 
 def test_gradient():
+	"""
+        check that your gradient is being calculated correctly
+        """
 	pass
 
 def test_training():
-	pass
+	"""
+        check that your weights update during training 
+        """
+
+	# Load data
+         X_train, X_val, y_train, y_val = utils.loadDataset(
+                  features=[
+                            'Penicillin V Potassium 500 MG',
+                            'Computed tomography of chest and abdomen',
+                            'Plain chest X-ray (procedure)',
+                            'Low Density Lipoprotein Cholesterol',
+                             'Creatinine',
+                             'AGE_DIAGNOSIS'
+        ],
+        split_percent=0.8,
+        split_seed=42
+                                                          )
+        # perform necessary data scaling
+        sc = StandardScaler()
+        X_train = sc.fit_transform(X_train)
+        
+        # Initialise logistic regression model 
+	lr_mod = LogisticRegressor(num_feats = len(X_train.shape[1], 
+			           max_iter=500
+				   )
+
+	# Get initial weights
+	init_weights = lr_mod.W.copy()	
+
+        # Train/fit logistic regression module using regression module
+        lr_mod.train_model(X_train, y_train)
+
+        # Get final weights
+        final_weights = lr_mod.W.copy()
+
+        # Check: have initial weights been updated (i.e. changed during training)?
+        assert np.array_equal(init_weights, final_weights) == False, 'Model weights are not being updated during training'
+       
