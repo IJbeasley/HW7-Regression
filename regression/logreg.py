@@ -173,7 +173,8 @@ class LogisticRegressor(BaseRegressor):
         neg_loss = y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred)
         loss = -1 * neg_loss
 
-        return loss
+        # return the mean loss
+        return np.mean(loss)
         
     def calculate_gradient(self, y_true: np.ndarray , X: np.ndarray) -> np.ndarray:
         """
