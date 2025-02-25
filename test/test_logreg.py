@@ -135,56 +135,50 @@ def test_loss_function():
     
     assert np.isclose(logreg_loss, sklearn_loss), 'Calculated loss by loss_function is not correct'
 
-# 
-# def test_gradient():
-#             """
-#             Unit test to check that gradient is being calculated correctly with calculate_gradient.
-#             Fit a logistic regression model with our regression module functions, to a small subset data in dataset/data/nsclc.csv,
-#             compare the gradient estimated against gradient to calculated by hand.
-#             """
-#             # Load data
-#             _, X_subsample, _, y_subsample = utils.loadDataset(
-#                 features=[
-#                     'Penicillin V Potassium 500 MG',
-#                    # 'Computed tomography of chest and abdomen',
-#                     'AGE_DIAGNOSIS'
-#                 ],
-#                 split_percent=0.95,
-#                 split_seed=42
-#             )
-#             
-#             # Split subsample set into training and validation 
-#             X_train, X_val, y_train, y_val = train_test_split(X_subsample, y_subsample, test_size=0.025, random_state=42)
-# 
-#             # Initialise logistic regression model
-#             lr_mod = reg.LogisticRegressor(
-#                                            num_feats = X_subsample.shape[1],
-#                                            max_iter=500
-#                                            )
-# 
-#             # Train/fit logistic regression module using regression module
-#             lr_mod.train_model(X_train, y_train, X_val, y_val)
-#             #lr_mod.train_model(X_subsample, y_subsample)
-#             
-#             # Calculate gradient with calculate_gradient
-#             est_grad = lr_mod.calculate_gradient(y_val, X_val)
-#             
-#             print(y_val)
-#             print(X_val)
-#             print(lr_mod.W)
-#             raise ValueError("Mnnnk")
-#             
-#             # Calculated gradient by hand - 
-#             # with y_val = [1 0 1]
-#             # X_val = 
-#                      # [[ 0.970601   51.        ]
-#                      # [ 0.68865913 38.        ]
-#                      # [ 1.63804991 51.        ]]
-#             true_grad = np.array([-0.725, -0.646, -24.478])
-# 
-#             # Compare true gradient with calculated gradient
-#             # TO DO: Change tolerance
-#             assert np.allclose(est_grad, true_grad, atol = 1e-3), "Gradient is not being estimated correctly by calculate_gradient function"
+
+def test_gradient():
+            """
+            Unit test to check that gradient is being calculated correctly with calculate_gradient.
+            Fit a logistic regression model with our regression module functions, to a small subset data in dataset/data/nsclc.csv,
+            compare the gradient estimated against gradient to calculated by hand.
+            """
+            # Load data
+            _, X_subsample, _, y_subsample = utils.loadDataset(
+                features=[
+                    'Penicillin V Potassium 500 MG',
+                    'AGE_DIAGNOSIS'
+                ],
+                split_percent=0.95,
+                split_seed=42
+            )
+
+            # Split subsample set into training and validation
+            X_train, X_val, y_train, y_val = train_test_split(X_subsample, y_subsample, test_size=0.025, random_state=42)
+
+            # Initialise logistic regression model
+            lr_mod = reg.LogisticRegressor(
+                                           num_feats = X_subsample.shape[1],
+                                           max_iter=500
+                                           )
+
+            # Train/fit logistic regression module using regression module
+            lr_mod.train_model(X_train, y_train, X_val, y_val)
+
+            # Calculate gradient with calculate_gradient
+            est_grad = lr_mod.calculate_gradient(y_val, X_val)
+
+            # Calculate the true gradient by hand: - to 3 dp
+            # with y_val = [1 0 1]
+            # X_val =
+                     # [[ 0.970601   51.        ]
+                     # [ 0.68865913 38.        ]
+                     # [ 1.63804991 51.        ]]
+            # y_pred = 
+            # [0.98351309 0.9442364  0.97132136]
+            true_grad = np.array([0.196, 11.192])
+
+            # Compare true gradient with calculated gradient
+            assert np.allclose(est_grad, true_grad, atol = 1e-3), "Gradient is not being estimated correctly by calculate_gradient function"
 
 def test_training():
     """
