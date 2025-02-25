@@ -134,11 +134,14 @@ class LogisticRegressor(BaseRegressor):
             raise ValueError("X should be a 2D matrix")
 
         # check: the number of weights = number of features in X
+        if X.shape[1] == self.num_feats:
+            X = np.hstack([X, np.ones((X.shape[0], 1))])
+        
         if X.shape[1] != len(self.W):
-            raise ValueError("The number of features in X should correspond to the number of weights in the fitted model")  
+           raise ValueError("The number of features in X should correspond to the number of weights in the fitted model")  
 
         # Linear combination of weights by features to get y_hat
-        y_hat = np.dot(X, self.W)
+        y_hat = np.dot(X, self.W).flatten()
 
         # Calculate predictions with sigmoid function
         y_pred = 1/(1 + np.exp(-y_hat))
@@ -178,7 +181,7 @@ class LogisticRegressor(BaseRegressor):
         # return the mean loss
         return np.mean(loss)
         
-    def calculate_gradient(self, y_true: np.ndarray , X: np.ndarray) -> np.ndarray:
+    def calculate_gradient(self, y_true: np.ndarray, X: np.ndarray) -> np.ndarray:
         """
         TODO: Calculate the gradient of the loss function with respect to the given data. This
         will be used to update the weights during training.
@@ -190,19 +193,11 @@ class LogisticRegressor(BaseRegressor):
         Returns: 
             Vector of gradients.
         """
-        # check: correct dimensions for X 
-        if X.ndim != 2: 
-            raise ValueError("X should be a 2D matrix")
             
-        # check: the number of weights = number of features in X    
-        if X.shape[1] + 1 != len(self.W):
-            raise ValueError("The number of features in X should correspond to the number of weights in the fitted model")  
-
         # check: the number of observations in y_true = number of observations in X
         if len(y_true) != X.shape[0]:
            raise ValueError("The length of y_true and rows in X should match")
         
-
         # Formula for gradient descent in logistic regression taken from: 
         # https://www.baeldung.com/cs/gradient-descent-logistic-regression
         # for instances 1, ... n:
@@ -218,6 +213,6 @@ class LogisticRegressor(BaseRegressor):
         error = y_pred - y_true
 
         # Calculate gradient: 
-        grad = 1 / n * np.dot(error, X) 
+        grad = (1 / n) * np.dot(X.T, error)
 
         return grad
