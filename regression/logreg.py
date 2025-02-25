@@ -195,7 +195,7 @@ class LogisticRegressor(BaseRegressor):
             raise ValueError("X should be a 2D matrix")
             
         # check: the number of weights = number of features in X    
-        if X.shape[1] != len(self.W):
+        if X.shape[1] + 1 != len(self.W):
             raise ValueError("The number of features in X should correspond to the number of weights in the fitted model")  
 
         # check: the number of observations in y_true = number of observations in X
