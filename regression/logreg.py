@@ -203,7 +203,7 @@ class LogisticRegressor(BaseRegressor):
         n = len(y_true)
 
         # Get vector of predictions: 
-        y_pred = make_prediction(X)
+        y_pred = self.make_prediction(X)
 
         # Calculate error = y_pred - y_true
         error = y_pred - y_true
