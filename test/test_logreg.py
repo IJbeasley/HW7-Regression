@@ -31,7 +31,7 @@ from sklearn.metrics import accuracy_score
 
 def test_prediction():
 	"""
-        Unit test to that prediction is working correctly. 
+        Unit test to check that prediction is working correctly. 
 	We fit a model with our regression module functions, to data in dataset/data/nsclc.csv. 
         We then estimate the accurarcy of this model on a validation dataset (with scikit learn)
 	- Compare its accurarcy to a scikit learn logistic regression model with the same model coefficents
@@ -132,13 +132,15 @@ def test_loss_function():
 
 def test_gradient():
 	"""
-        check that your gradient is being calculated correctly
+        Unit test to check that your gradient is being calculated correctly.
         """
 	pass
 
 def test_training():
 	"""
-        check that your weights update during training 
+        Unit test to check that weights update during training. 
+	We fit a model with our regression module functions, to data in dataset/data/nsclc.csv, 
+        and compare the weights of the final model, with that of the initalised model. 
         """
 
 	# Load data
