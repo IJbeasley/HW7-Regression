@@ -117,7 +117,7 @@ class LogisticRegressor(BaseRegressor):
             batch_size=batch_size
         )
     
-    def make_prediction(self, X) -> np.array:
+    def make_prediction(self, X: np.ndarray) -> np.array:
         """
         TODO: Implement logistic function to get estimates (y_pred) for input X values. The logistic
         function is a transformation of the linear model into an "S-shaped" curve that can be used
@@ -129,6 +129,15 @@ class LogisticRegressor(BaseRegressor):
         Returns: 
             The predicted labels (y_pred) for given X.
         """
+
+        # weights by features to get y_hat
+        y_hat = np.dot(X, self.W)
+
+        # calculate predictions with sigmoid function
+        y_pred = 1/(1 + np.exp(-y_hat))
+
+        return y_pred
+
         pass
     
     def loss_function(self, y_true, y_pred) -> float:
