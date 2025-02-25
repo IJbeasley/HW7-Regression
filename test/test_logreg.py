@@ -98,7 +98,7 @@ def test_prediction():
     sk_test_y_pred_accuracy = accuracy_score(y_test, sk_y_pred)
 
     # Check: is the accuarcy of predictions from both the sklearn model, and regression module model consistent?
-    assert np.isclose(test_y_pred_accuarcy, sk_test_y_pred_accuracy, rtol = 0.01), "Accuracy of fitted model differs from sklearn"
+    assert np.isclose(test_y_pred_accuarcy, sk_test_y_pred_accuracy, rtol = 1e-10), "Accuracy of fitted model differs from sklearn"
 
     # Check: are the predictions from both the sklearn model, and regression module model consistent?
     assert np.array_equal(test_y_pred, sk_y_pred), "Predictions of our model differ from sklearn model"
