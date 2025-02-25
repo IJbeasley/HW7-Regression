@@ -132,26 +132,52 @@ def test_loss_function():
 
 def test_gradient():
 	"""
-        Unit test to check that your gradient is being calculated correctly.
+        Unit test to check that gradient is being calculated correctly with calculate_gradient.
+	Fit a logistic regression model with our regression module functions, to a small subset data in dataset/data/nsclc.csv, 
+        compare the gradient estimated against gradient to calculated by hand. 
         """
-	pass
+	# Load data
+        _, X_subsample, _, y_subsample = utils.loadDataset(
+                  features=[
+                            'Penicillin V Potassium 500 MG',
+                            'Computed tomography of chest and abdomen',
+                             'AGE_DIAGNOSIS'
+        ],
+        split_percent=0.95,
+        split_seed=42
+                                                          )
+
+        # Initialise logistic regression model 
+	lr_mod = LogisticRegressor(num_feats = len(X_train.shape[1]), 
+			           max_iter=500
+				   )	
+				   
+        # Train/fit logistic regression module using regression module
+        lr_mod.train_model(X_subsample, y_subsample)
+
+	# Calculate gradient with calculate_gradient
+	est_grad = lr_mod.calculate_gradient(y_subsample, X_subsample)
+
+	# TO DO: Calculate gradient by hand
+	true_grad = np.array([1/2, 1/2])
+
+	# Compare true gradient with calculated gradient
+	# TO DO: Change tolerance
+	assert np.allclose(est_grad, true_grad, atol = 1), "Gradient is not being estimated correctly by calculate_gradient function"
 
 def test_training():
 	"""
         Unit test to check that weights update during training. 
-	We fit a model with our regression module functions, to data in dataset/data/nsclc.csv, 
+	Fit a model with our regression module functions, to data in dataset/data/nsclc.csv, 
         and compare the weights of the final model, with that of the initalised model. 
         """
 
 	# Load data
-         X_train, X_val, y_train, y_val = utils.loadDataset(
+         X_train, _, y_train, _ = utils.loadDataset(
                   features=[
                             'Penicillin V Potassium 500 MG',
                             'Computed tomography of chest and abdomen',
-                            'Plain chest X-ray (procedure)',
-                            'Low Density Lipoprotein Cholesterol',
-                             'Creatinine',
-                             'AGE_DIAGNOSIS'
+                            'Plain chest X-ray (procedure)'
         ],
         split_percent=0.8,
         split_seed=42
@@ -161,7 +187,7 @@ def test_training():
         X_train = sc.fit_transform(X_train)
         
         # Initialise logistic regression model 
-	lr_mod = LogisticRegressor(num_feats = len(X_train.shape[1], 
+	lr_mod = LogisticRegressor(num_feats = len(X_train.shape[1]), 
 			           max_iter=500
 				   )
 
