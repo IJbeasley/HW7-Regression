@@ -15,13 +15,91 @@ import numpy as np
 # Our regression module
 from regression import logreg, utils
 
+# Preprocessing of data/nsclc.csv
+from sklearn.preprocessing import StandardScaler
+# To create a test set
+from sklearn.model_selection import train_test_split
+
+# To compare fitted sklearn model to regression model 
+from sklearn.linear_model import LogisticRegression
+
 # Use scikit-learn to check the correctness of our model
 from sklearn.metrics import log_loss
+from sklearn.metrics import accuracy_score
 
 # (you will probably need to import more things here)
 
 def test_prediction():
-	pass
+	"""
+        Unit test to that prediction is working correctly. 
+	We fit a model with our regression module functions, to data in dataset/data/nsclc.csv. 
+        We then estimate the accurarcy of this model on a validation dataset (with scikit learn)
+	- Compare its accurarcy to a scikit learn logistic regression model with the same model coefficents
+        - (?TO POTENTIALLY ADD LATER) Compare its accurarcy to a scikit learn logistic regression model, trained on the same data with saga solver
+        """
+
+	 # Load data
+         X_train, X_val, y_train, y_val = utils.loadDataset(
+                  features=[
+                            'Penicillin V Potassium 500 MG',
+                            'Computed tomography of chest and abdomen',
+                            'Plain chest X-ray (procedure)',
+                            'Low Density Lipoprotein Cholesterol',
+                             'Creatinine',
+                             'AGE_DIAGNOSIS'
+        ],
+        split_percent=0.8,
+        split_seed=42
+                                                          )
+
+        # Split validation set into validation and test
+        X_val, X_test, y_val, y_test = train_test_split(X_val, y_val, test_size=0.5, random_state=42)
+
+        # Scale the data, since values vary across feature. Note that we
+        # fit on the training data and use the same scaler for X_val.
+        sc = StandardScaler()
+        X_train = sc.fit_transform(X_train)
+        X_val = sc.transform(X_val)
+
+        # Train/fit logistic regression module using regression module
+        lr_mod = LogisticRegressor(num_feats = len(X.shape[1]), 
+				   learning_rate=0.01, 
+				   max_iter=500, 
+				   batch_size=50
+				   )
+
+        lr_mod.train_model(X_train, y_train, X_val, y_val)
+
+        # Calculate test set set predictions: 
+        test_y_pred = lr_mod.make_prediction(X_test)
+         
+        # Calculate test set prediction accuarcy for regression module fitted model
+        test_y_pred_accuarcy = accuracy_score(test_y_pred, y_test)
+
+        # Now fit scikit learn model
+        sk_lr_mod = LogisticRegression(solver='saga', 
+				       max_iter=500,
+				       random_state=42)
+
+        sk_lr_mod.fit(X_train, y_train)
+        
+        # Manually set feature weights and intercept
+        sk_lr_mod.intercept_ = lr_mod.W[0]
+        sk_lr_mod.coef_  = lr_mod.W.pop()
+
+        # Predict on the test set
+        sk_y_pred = model.predict(X_test)
+
+        # Calculate test set prediction accuarcy for scikit learn fitted model
+        sk_test_y_pred_accuracy = accuracy_score(y_test, sk_y_pred)
+
+        # Check: is the accuarcy of predictions from both the sklearn model, and regression module model consistent?
+        assert np.isclose(test_y_pred_accuarcy, sk_y_pred_accuarcy, rtol = 0.01), ""
+
+        # Check: are the predictions from both the sklearn model, and regression module model consistent?
+        assert np.array_equal(test_y_pred, sk_y_pred), ""
+
+		
 
 def test_loss_function():
 	"""
