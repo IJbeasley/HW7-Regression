@@ -139,7 +139,7 @@ class LogisticRegressor(BaseRegressor):
         return y_pred
 
     
-    def loss_function(self, y_true, y_pred) -> float:
+    def loss_function(self, y_true: np.ndarray, y_pred: np.ndarray) -> float:
         """
         TODO: Implement binary cross entropy loss, which assumes that the true labels are either
         0 or 1. (This can be extended to more than two classes, but here we have just two.)
