@@ -27,39 +27,41 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import log_loss
 from sklearn.metrics import accuracy_score
 
-# (you will probably need to import more things here)
 
 def test_prediction():
 	"""
-        Unit test to check that prediction is working correctly. 
-	We fit a model with our regression module functions, to data in dataset/data/nsclc.csv. 
-        We then estimate the accurarcy of this model on a validation dataset (with scikit learn)
-	- Compare its accurarcy to a scikit learn logistic regression model with the same model coefficents
-        - (?TO POTENTIALLY ADD LATER) Compare its accurarcy to a scikit learn logistic regression model, trained on the same data with saga solver
-        """
+	
+  Unit test to check that prediction is working correctly. 
+  
+	Fit a model with our regression module functions, to data in dataset/data/nsclc.csv. 
+  Then estimate the accurarcy of this model on a validation dataset (with scikit learn)
+	- Compare this model's accurarcy to a scikit learn logistic regression model with the same model coefficents
+  - (?TO POTENTIALLY ADD LATER) Compare its accurarcy to a scikit learn logistic regression model, trained on the same data with saga solver
+  
+  """
 
-	 # Load data
-         X_train, X_val, y_train, y_val = utils.loadDataset(
-                  features=[
-                            'Penicillin V Potassium 500 MG',
-                            'Computed tomography of chest and abdomen',
-                            'Plain chest X-ray (procedure)',
-                            'Low Density Lipoprotein Cholesterol',
-                             'Creatinine',
-                             'AGE_DIAGNOSIS'
-        ],
-        split_percent=0.8,
-        split_seed=42
-                                                          )
+	# Load data
+  X_train, X_val, y_train, y_val = utils.loadDataset(split_percent=0.8, split_seed=42)
+                 #  features=[
+                 #            'Penicillin V Potassium 500 MG',
+                 #            'Computed tomography of chest and abdomen',
+                 #            'Plain chest X-ray (procedure)',
+                 #            'Low Density Lipoprotein Cholesterol',
+                 #             'Creatinine',
+                 #             'AGE_DIAGNOSIS'
+                 #           ],
+                 # split_percent=0.8,
+                 # split_seed=42
+                 #                                          )
 
-        # Split validation set into validation and test
-        X_val, X_test, y_val, y_test = train_test_split(X_val, y_val, test_size=0.5, random_state=42)
+  # Split validation set into validation and test
+  X_val, X_test, y_val, y_test = train_test_split(X_val, y_val, test_size=0.5, random_state=42)
 
-        # Scale the data, since values vary across feature. Note that we
-        # fit on the training data and use the same scaler for X_val.
-        sc = StandardScaler()
-        X_train = sc.fit_transform(X_train)
-        X_val = sc.transform(X_val)
+  # Scale the data, since values vary across feature. Note that we
+  # fit on the training data and use the same scaler for X_val.
+  sc = StandardScaler()
+  X_train = sc.fit_transform(X_train)
+  X_val = sc.transform(X_val)
 
         # Train/fit logistic regression module using regression module
         lr_mod = LogisticRegressor(num_feats = len(X_train.shape[1]), 
