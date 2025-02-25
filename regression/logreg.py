@@ -158,7 +158,7 @@ class LogisticRegressor(BaseRegressor):
 
         return loss
         
-    def calculate_gradient(self, y_true, X) -> np.ndarray:
+    def calculate_gradient(self, y_true: np.ndarray , X: np.ndarray) -> np.ndarray:
         """
         TODO: Calculate the gradient of the loss function with respect to the given data. This
         will be used to update the weights during training.
@@ -170,4 +170,22 @@ class LogisticRegressor(BaseRegressor):
         Returns: 
             Vector of gradients.
         """
-        pass
+
+        # Formula for gradient descent in logistic regression taken from: 
+        # https://www.baeldung.com/cs/gradient-descent-logistic-regression
+        # for instances 1, ... n:
+        # (1/n) * for i...n sum((y_pred_i - y_true_i)*x_i)
+
+        # Number of observations / instances: 
+        n = len(y_true)
+
+        # Get vector of predictions: 
+        y_pred = make_prediction(X)
+
+        # Calculate error = y_pred - y_true
+        error = y_pred - y_true
+
+        # Calculate gradient: 
+        grad = 1 / n * np.dot(error, X) 
+
+        return grad
