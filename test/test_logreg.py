@@ -40,19 +40,19 @@ def test_prediction():
   
   """
 
-	# Load data
-    X_train, X_val, y_train, y_val = utils.loadDataset(split_percent=0.8, split_seed=42)
-    #  features=[
-    #            'Penicillin V Potassium 500 MG',
-    #            'Computed tomography of chest and abdomen',
-    #            'Plain chest X-ray (procedure)',
-    #            'Low Density Lipoprotein Cholesterol',
-    #             'Creatinine',
-    #             'AGE_DIAGNOSIS'
-    #           ],
-    # split_percent=0.8,
-    # split_seed=42
-    #                                          )
+   # Load data
+    X_train, X_val, y_train, y_val = utils.loadDataset(
+      features=[
+                'Penicillin V Potassium 500 MG',
+                'Computed tomography of chest and abdomen',
+                'Plain chest X-ray (procedure)',
+                'Low Density Lipoprotein Cholesterol',
+                 'Creatinine',
+                 'AGE_DIAGNOSIS'
+               ],
+     split_percent=0.8,
+    split_seed=42
+                                             )
 
     # Split validation set into validation and test
     X_val, X_test, y_val, y_test = train_test_split(X_val, y_val, test_size=0.5, random_state=42)
@@ -94,7 +94,7 @@ def test_prediction():
     sk_test_y_pred_accuracy = accuracy_score(y_test, sk_y_pred)
 
     # Check: is the accuarcy of predictions from both the sklearn model, and regression module model consistent?
-    assert np.isclose(test_y_pred_accuarcy, sk_y_pred_accuarcy, rtol = 0.01), "Accuracy of fitted model differs from sklearn"
+    assert np.isclose(test_y_pred_accuarcy, sk_test_y_pred_accuracy, rtol = 0.01), "Accuracy of fitted model differs from sklearn"
 
     # Check: are the predictions from both the sklearn model, and regression module model consistent?
     assert np.array_equal(test_y_pred, sk_y_pred), "Predictions of our model differ from sklearn model"
