@@ -62,7 +62,7 @@ def test_prediction():
         X_val = sc.transform(X_val)
 
         # Train/fit logistic regression module using regression module
-        lr_mod = LogisticRegressor(num_feats = len(X.shape[1]), 
+        lr_mod = LogisticRegressor(num_feats = len(X_train.shape[1]), 
 				   learning_rate=0.01, 
 				   max_iter=500, 
 				   batch_size=50
@@ -84,20 +84,20 @@ def test_prediction():
         sk_lr_mod.fit(X_train, y_train)
         
         # Manually set feature weights and intercept
-        sk_lr_mod.intercept_ = lr_mod.W[0]
-        sk_lr_mod.coef_  = lr_mod.W.pop()
+        sk_lr_mod.intercept_ = np.array([lr_mod.W[-1]])  # Last element is bias/intercept
+        sk_lr_mod.coef_  = lr_mod.W[:-1].reshape(1, -1) 
 
         # Predict on the test set
-        sk_y_pred = model.predict(X_test)
+        sk_y_pred = sk_lr_mod.predict(X_test)
 
         # Calculate test set prediction accuarcy for scikit learn fitted model
         sk_test_y_pred_accuracy = accuracy_score(y_test, sk_y_pred)
 
         # Check: is the accuarcy of predictions from both the sklearn model, and regression module model consistent?
-        assert np.isclose(test_y_pred_accuarcy, sk_y_pred_accuarcy, rtol = 0.01), ""
+        assert np.isclose(test_y_pred_accuarcy, sk_y_pred_accuarcy, rtol = 0.01), "Accuracy of fitted model differs from sklearn"
 
         # Check: are the predictions from both the sklearn model, and regression module model consistent?
-        assert np.array_equal(test_y_pred, sk_y_pred), ""
+        assert np.array_equal(test_y_pred, sk_y_pred), "Predictions of our model differ from sklearn model"
 
 		
 
