@@ -164,6 +164,11 @@ class LogisticRegressor(BaseRegressor):
         if len(y_true) != len(y_pred):
            raise ValueError("The length of y_true and y_pred should match")
 
+        # Handle potential numerical stability issues
+        # By adding small epsilon to prevent log(0)
+        epsilon = 1e-15
+        y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
+
         # calculate binary cross-entropy loss = - (y * log(p) + (1 - y) * log(1 - p))
         neg_loss = y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred)
         loss = -1 * neg_loss
