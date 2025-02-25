@@ -129,6 +129,12 @@ class LogisticRegressor(BaseRegressor):
         Returns: 
             The predicted labels (y_pred) for given X.
         """
+        # check: the number of weights = number of features in X
+        if X.ndim != 2: 
+            raise ValueError("X should be a 2D matrix")
+            
+        if X.shape[1] != len(self.W):
+            raise ValueError("The number of features in X should correspond to the number of weights in the fitted model")  
 
         # weights by features to get y_hat
         y_hat = np.dot(X, self.W)
@@ -151,6 +157,12 @@ class LogisticRegressor(BaseRegressor):
         Returns: 
             The mean loss (a single number).
         """
+        # check - the dimensions, and length of y_true and y_pred matrix
+        if y_true.ndim != y_pred.ndim:
+            raise ValueError("The dimensions of y_true and y_pred should match (=1)")
+
+        if len(y_true) != len(y_pred):
+           raise ValueError("The length of y_true and y_pred should match")
 
         # calculate binary cross-entropy loss = - (y * log(p) + (1 - y) * log(1 - p))
         neg_loss = y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred)
@@ -170,6 +182,17 @@ class LogisticRegressor(BaseRegressor):
         Returns: 
             Vector of gradients.
         """
+        # check: the number of weights = number of features in X
+        if X.ndim != 2: 
+            raise ValueError("X should be a 2D matrix")
+            
+        if X.shape[1] != len(self.W):
+            raise ValueError("The number of features in X should correspond to the number of weights in the fitted model")  
+
+        # check: the number of observations in y_true = number of observations in X
+        if len(y_true) != X.shape[0]:
+           raise ValueError("The length of y_true and rows in X should match")
+        
 
         # Formula for gradient descent in logistic regression taken from: 
         # https://www.baeldung.com/cs/gradient-descent-logistic-regression
