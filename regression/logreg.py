@@ -129,17 +129,18 @@ class LogisticRegressor(BaseRegressor):
         Returns: 
             The predicted labels (y_pred) for given X.
         """
-        # check: the number of weights = number of features in X
+        # check: correct dimensions for X 
         if X.ndim != 2: 
             raise ValueError("X should be a 2D matrix")
-            
+
+        # check: the number of weights = number of features in X
         if X.shape[1] != len(self.W):
             raise ValueError("The number of features in X should correspond to the number of weights in the fitted model")  
 
-        # weights by features to get y_hat
+        # Linear combination of weights by features to get y_hat
         y_hat = np.dot(X, self.W)
 
-        # calculate predictions with sigmoid function
+        # Calculate predictions with sigmoid function
         y_pred = 1/(1 + np.exp(-y_hat))
 
         return y_pred
@@ -157,10 +158,11 @@ class LogisticRegressor(BaseRegressor):
         Returns: 
             The mean loss (a single number).
         """
-        # check - the dimensions, and length of y_true and y_pred matrix
+        # check - the dimensions of y_true and y_pred match
         if y_true.ndim != y_pred.ndim:
             raise ValueError("The dimensions of y_true and y_pred should match (=1)")
-
+        
+        # check - the number of observations in y_true and y_pred match
         if len(y_true) != len(y_pred):
            raise ValueError("The length of y_true and y_pred should match")
 
@@ -188,10 +190,11 @@ class LogisticRegressor(BaseRegressor):
         Returns: 
             Vector of gradients.
         """
-        # check: the number of weights = number of features in X
+        # check: correct dimensions for X 
         if X.ndim != 2: 
             raise ValueError("X should be a 2D matrix")
             
+        # check: the number of weights = number of features in X    
         if X.shape[1] != len(self.W):
             raise ValueError("The number of features in X should correspond to the number of weights in the fitted model")  
 
