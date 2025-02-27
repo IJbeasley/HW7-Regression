@@ -129,21 +129,25 @@ class LogisticRegressor(BaseRegressor):
         Returns: 
             The predicted labels (y_pred) for given X.
         """
+        
+        # Step 0. Checks: 
+        
         # check: correct dimensions for X 
         if X.ndim != 2: 
             raise ValueError("X should be a 2D matrix")
 
         # check: the number of weights = number of features in X
-        if X.shape[1] == self.num_feats:
-            X = np.hstack([X, np.ones((X.shape[0], 1))])
-        
-        if X.shape[1] != len(self.W):
+        if X.shape[1] != self.W.shape[0]:
            raise ValueError("The number of features in X should correspond to the number of weights in the fitted model")  
 
+
+        # Step 1. Calculate
         # Linear combination of weights by features to get y_hat
         y_hat = np.dot(X, self.W).flatten()
 
-        # Calculate predictions with sigmoid function
+
+        # Step 2. 
+        # Estimate predictions with sigmoid function
         y_pred = 1/(1 + np.exp(-y_hat))
 
         return y_pred
@@ -161,6 +165,10 @@ class LogisticRegressor(BaseRegressor):
         Returns: 
             The mean loss (a single number).
         """
+        # Step 0. Check inputs
+        if y_true.ndim != 1 or y_pred.ndim != 1: 
+            raise ValueError("y_true and y_pred should be 1D arrays")
+        
         # check - the dimensions of y_true and y_pred match
         if y_true.ndim != y_pred.ndim:
             raise ValueError("The dimensions of y_true and y_pred should match (=1)")
@@ -169,14 +177,16 @@ class LogisticRegressor(BaseRegressor):
         if len(y_true) != len(y_pred):
            raise ValueError("The length of y_true and y_pred should match")
 
+        # Step 1. Prepare inputs
         # Handle potential numerical stability issues
         # By adding small epsilon to prevent log(0)
         epsilon = 1e-15
         y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
 
+        # Step 2. Calculate loss
         # calculate binary cross-entropy loss = - (y * log(p) + (1 - y) * log(1 - p))
-        neg_loss = y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred)
-        loss = -1 * neg_loss
+        neg_losses = y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred)
+        losses = -1 * neg_losses
 
         # return the mean loss
         return np.mean(loss)
@@ -193,6 +203,9 @@ class LogisticRegressor(BaseRegressor):
         Returns: 
             Vector of gradients.
         """
+        # Step 0. Check inputs
+        if y_true.ndim != 1: 
+            raise ValueError("y_true should be a 1D array")
             
         # check: the number of observations in y_true = number of observations in X
         if len(y_true) != X.shape[0]:
@@ -202,13 +215,15 @@ class LogisticRegressor(BaseRegressor):
         # https://www.baeldung.com/cs/gradient-descent-logistic-regression
         # for instances 1, ... n:
         # (1/n) * for i...n sum((y_pred_i - y_true_i)*x_i)
-
+        
+        # Step 1. Prepare required inputs into above formula
         # Number of observations / instances: 
         n = len(y_true)
 
         # Get vector of predictions: 
         y_pred = self.make_prediction(X)
 
+        # Step 2. Calculate gradient 
         # Calculate error = y_pred - y_true
         error = y_pred - y_true
 
