@@ -37,7 +37,6 @@ def test_prediction():
   Then estimate the accuracy of this model on a validation dataset (with scikit learn)
   - Compare this model's prediction accuracy to chance
 	- Compare this model's prediction accuracy to a scikit learn logistic regression model with the same model coefficents
-  - (?TO POTENTIALLY ADD LATER) Compare its accurarcy to a scikit learn logistic regression model, trained on the same data with saga solver
 
   """
 
@@ -51,7 +50,7 @@ def test_prediction():
                  'Creatinine',
                  'AGE_DIAGNOSIS'
                ],
-     split_percent=0.8,
+     split_percent=0.6,
     split_seed=42
                                              )
 
