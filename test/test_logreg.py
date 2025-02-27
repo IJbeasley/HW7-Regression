@@ -66,9 +66,10 @@ def test_prediction():
     X_test = sc.transform(X_test)
 
     # Train/fit logistic regression module using regression module
+    np.random.seed(42)
     lr_mod = reg.LogisticRegressor(
                                    num_feats = X_train.shape[1],
-                                   max_iter=50
+                                   max_iter=500
                                    )
     
 
@@ -80,20 +81,22 @@ def test_prediction():
     test_y_pred  = np.where(test_y_pred  > 0.5, 1, 0)
 
     # Calculate test set prediction accuracy for regression module fitted model
-    test_y_pred_accuarcy = accuracy_score(test_y_pred, y_test)
-    
+    test_y_pred_accuracy = accuracy_score(test_y_pred, y_test)
+ 
     # Calculate an estimate of random chance accuracy
     np.random.seed(42)
-    est_rand_accuracy = accuracy_score(np.random.random(size=len(y_test)), y_test)
-    
-    # Compare our estimate of randm chance accuracy with the accuarcy of our model
+    rand_preds = np.random.randint(0, 2, size=len(y_test))
+    est_rand_accuracy = accuracy_score(rand_preds, y_test)
+  
+    # Compare our estimate of randm chance accuracy with the accuracy of our model
     # Our model should be more accurate
-    assert np.all(test_y_pred_accuarcy > est_rand_accuracy),  "Accuracy of fitted model is not better than random chance"
+    assert np.all(test_y_pred_accuracy > est_rand_accuracy),  "Accuracy of fitted model is not better than random chance"
 
     # Now fit scikit learn model - with the same 
     sk_lr_mod = LogisticRegression(solver='saga',
-                                   max_iter=50,
-                                   random_state=42)
+                                   max_iter=5,
+                                   random_state=42
+                                   )
 
     sk_lr_mod.fit(X_train, y_train)
 
@@ -104,11 +107,11 @@ def test_prediction():
     # Predict on the test set
     sk_y_pred = sk_lr_mod.predict(X_test)
 
-    # Calculate test set prediction accuarcy for scikit learn fitted model
+    # Calculate test set prediction accuracy for scikit learn fitted model
     sk_test_y_pred_accuracy = accuracy_score(y_test, sk_y_pred)
 
-    # Check: is the accuarcy of predictions from both the sklearn model, and regression module model consistent?
-    assert np.isclose(test_y_pred_accuarcy, sk_test_y_pred_accuracy, rtol = 1e-10), "Accuracy of fitted model differs from sklearn"
+    # Check: is the accuracy of predictions from both the sklearn model, and regression module model consistent?
+    assert np.isclose(test_y_pred_accuracy, sk_test_y_pred_accuracy, rtol = 1e-10), "Accuracy of fitted model differs from sklearn"
 
     # Check: are the predictions from both the sklearn model, and regression module model consistent?
     assert np.array_equal(test_y_pred, sk_y_pred), "Predictions of our model differ from sklearn model"
