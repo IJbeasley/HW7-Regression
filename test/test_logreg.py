@@ -34,8 +34,9 @@ def test_prediction():
     Unit test to check that prediction is working correctly.
 
 	Fit a model with our regression module functions, to data in dataset/data/nsclc.csv.
-  Then estimate the accurarcy of this model on a validation dataset (with scikit learn)
-	- Compare this model's accurarcy to a scikit learn logistic regression model with the same model coefficents
+  Then estimate the accuracy of this model on a validation dataset (with scikit learn)
+  - Compare this model's prediction accuracy to chance
+	- Compare this model's prediction accuracy to a scikit learn logistic regression model with the same model coefficents
   - (?TO POTENTIALLY ADD LATER) Compare its accurarcy to a scikit learn logistic regression model, trained on the same data with saga solver
 
   """
@@ -62,6 +63,7 @@ def test_prediction():
     sc = StandardScaler()
     X_train = sc.fit_transform(X_train)
     X_val = sc.transform(X_val)
+    X_test = sc.transform(X_test)
 
     # Train/fit logistic regression module using regression module
     lr_mod = reg.LogisticRegressor(
@@ -77,10 +79,18 @@ def test_prediction():
     # Convert probabilities to predictions
     test_y_pred  = np.where(test_y_pred  > 0.5, 1, 0)
 
-    # Calculate test set prediction accuarcy for regression module fitted model
+    # Calculate test set prediction accuracy for regression module fitted model
     test_y_pred_accuarcy = accuracy_score(test_y_pred, y_test)
+    
+    # Calculate an estimate of random chance accuracy
+    np.random.seed(42)
+    est_rand_accuracy = accuracy_score(np.random.random(size=len(y_test)), y_test)
+    
+    # Compare our estimate of randm chance accuracy with the accuarcy of our model
+    # Our model should be more accurate
+    assert np.all(test_y_pred_accuarcy > est_rand_accuracy),  "Accuracy of fitted model is not better than random chance"
 
-    # Now fit scikit learn model
+    # Now fit scikit learn model - with the same 
     sk_lr_mod = LogisticRegression(solver='saga',
                                    max_iter=50,
                                    random_state=42)
@@ -142,6 +152,7 @@ def test_gradient():
             Fit a logistic regression model with our regression module functions, to a small subset data in dataset/data/nsclc.csv,
             compare the gradient estimated against gradient to calculated by hand.
             """
+            
             # Load data
             _, X_subsample, _, y_subsample = utils.loadDataset(
                 features=[
@@ -155,6 +166,10 @@ def test_gradient():
             # Split subsample set into training and validation
             X_train, X_val, y_train, y_val = train_test_split(X_subsample, y_subsample, test_size=0.025, random_state=42)
 
+            sc = StandardScaler()
+            X_train = sc.fit_transform(X_train)
+            X_val = sc.transform(X_val)
+            
             # Initialise logistic regression model
             lr_mod = reg.LogisticRegressor(
                                            num_feats = X_subsample.shape[1],
@@ -166,19 +181,20 @@ def test_gradient():
 
             # Calculate gradient with calculate_gradient
             est_grad = lr_mod.calculate_gradient(y_val, X_val)
-
+            
             # Calculate the true gradient by hand: - to 3 dp
             # with y_val = [1 0 1]
             # X_val =
-                     # [[ 0.970601   51.        ]
-                     # [ 0.68865913 38.        ]
-                     # [ 1.63804991 51.        ]]
+            #         [[ 0.44947539  0.52188746]
+            #         [-0.05860327 -0.66174579]
+            #         [ 1.65226426  0.52188746]]
             # y_pred = 
-            # [0.98351309 0.9442364  0.97132136]
-            true_grad = np.array([0.196, 11.192])
+            # [0.4806557  0.30044368 0.46043094]
+            true_grad = np.array([-0.380, -0.250])
 
             # Compare true gradient with calculated gradient
             assert np.allclose(est_grad, true_grad, atol = 1e-3), "Gradient is not being estimated correctly by calculate_gradient function"
+
 
 def test_training():
     """
@@ -200,6 +216,7 @@ def test_training():
     # perform necessary data scaling
     sc = StandardScaler()
     X_train = sc.fit_transform(X_train)
+    X_val = sc.fit_transform(X_val)
 
     # Initialise logistic regression model
     lr_mod = reg.LogisticRegressor(
