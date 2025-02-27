@@ -137,6 +137,9 @@ class LogisticRegressor(BaseRegressor):
             raise ValueError("X should be a 2D matrix")
 
         # check: the number of weights = number of features in X
+        if X.shape[1] == self.num_feats:
+           X = np.hstack([X, np.ones((X.shape[0], 1))])
+        
         if X.shape[1] != self.W.shape[0]:
            raise ValueError("The number of features in X should correspond to the number of weights in the fitted model")  
 
@@ -189,7 +192,7 @@ class LogisticRegressor(BaseRegressor):
         losses = -1 * neg_losses
 
         # return the mean loss
-        return np.mean(loss)
+        return np.mean(losses)
         
     def calculate_gradient(self, y_true: np.ndarray, X: np.ndarray) -> np.ndarray:
         """
